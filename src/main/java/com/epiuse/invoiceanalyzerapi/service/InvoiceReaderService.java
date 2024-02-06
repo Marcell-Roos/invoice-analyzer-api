@@ -170,27 +170,34 @@ public class InvoiceReaderService {
 				
 			} 
 			catch(Exception e) {
-				// If there is a fail, display file which failed and write to error log
-				//e.printStackTrace(); Debugging code
-//				System.out.println("Failed to process: " +imageFile);
-//				errorFiles.add(imageFile);
+				
 			}
 			
 		}
-		WriterService writerService = new WriterService();
 		
-		// Write to excel workbook
-		writerService.writeInvoicesToSpreadsheet(invoices);
-		// Write Errors to text file to be examined
-		writerService.writeErrorFiles(errorFiles);
-		CommandLineService.cleanUploads();
-		invoices.clear();
-		errorFiles.clear();
-		// Process finished, inform user
+		
+		writeToFiles();
+		cleanUp();
 		LocalDateTime endDate = LocalDateTime.now();
 		System.out.println("Done processing files.");
 		System.out.println("End Time: " + endDate.toString());
 		
+	}
+	
+	public void writeToFiles() {
+		WriterService writerService = new WriterService();
+		// Write to excel workbook
+		writerService.writeInvoicesToSpreadsheet(invoices);
+		// Write Errors to text file to be examined
+		writerService.writeErrorFiles(errorFiles);
+	}
+	
+	public void cleanUp() {
+		CommandLineService.cleanUploads();
+		invoices.clear();
+		errorFiles.clear();
+		counter = 0;
+		iteration = 0;
 	}
 	
 	private static ArrayList<String> loadFileList(){

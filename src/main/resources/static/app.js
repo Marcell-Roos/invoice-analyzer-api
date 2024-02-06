@@ -1,54 +1,28 @@
-
-var messageArea = document.querySelector('#messageArea');
-var connectingElement = document.querySelector('.connecting');
-
+// Initialize Websocket
 var stompClient = null;
-
-
-
 var socket = new SockJS('/ws');
-        stompClient = Stomp.over(socket);
+stompClient = Stomp.over(socket);
+stompClient.connect({}, onConnected, onError);
 
-        stompClient.connect({}, onConnected, onError);
-
-
+// Subscribe to topic
 function onConnected() {
     // Subscribe to the Public Topic
     stompClient.subscribe('/topic/public', onMessageReceived);
-    connectingElement.classList.add('hidden');
 }
 
 
 function onError(error) {
-    connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
-    connectingElement.style.color = 'red';
+    console.log('Error occured');
+    console.log(error);
 }
-
-
-
 
 function onMessageReceived(payload) {
     var message = payload.body;
-
-    var messageElement = document.createElement('li');
-    messageElement.classList.add('chat-message');
-
-    
-
-    var textElement = document.createElement('p');
-    var messageText = document.createTextNode(message);
-    textElement.appendChild(messageText);
-
-    messageElement.appendChild(textElement);
-
-    messageArea.appendChild(messageElement);
-    messageArea.scrollTop = messageArea.scrollHeight;
+	console.log(message);
+	let progressBar = document.getElementById("progressBar");
+	console.log(progressBar);
+	progressBar.setAttribute("value",message);
 }
-
-
-
-
-
 
 
 // Add event listener to the button element
