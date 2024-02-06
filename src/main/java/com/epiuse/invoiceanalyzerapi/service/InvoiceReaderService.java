@@ -4,15 +4,20 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.stereotype.Service;
 
 import com.epiuse.invoiceanalyzerapi.model.Invoice;
 import com.epiuse.invoiceanalyzerapi.model.InvoiceItem;
 
-
+@Service
 public class InvoiceReaderService {
+	 @Autowired
+	    private SimpMessageSendingOperations messagingTemplate;
+	
+	
 	
 	final private static String ITEM_BLOCK_START_TRIGGER = "DESCRIPTION UNIT PRICE TOTAL"; 
 	final private static String ITEM_BLOCK_END_TRIGGER = "Remarks / Payment Instructions:";
@@ -21,7 +26,7 @@ public class InvoiceReaderService {
 	private static int counter = 0;
 	private static int iteration = 0;
 	private static ArrayList<Invoice> invoices = new ArrayList<>();
-	public static void readInvoices() {
+	public void readInvoices() {
 		LocalDateTime startDate = LocalDateTime.now();
 		
 		List<String> fileList = loadFileList();
@@ -39,14 +44,11 @@ public class InvoiceReaderService {
 			iteration = i;
 			try {
 				// Execute Tesseract to transform the image into an ArrayList 
-				
-				 
 				 Thread thread1 = new Thread(()->{
 					 invoices.add(
 							 analyzeInvoice(CommandLineService.executeTesseract(fileList.get(iteration),1),fileList.get(iteration))
 							 );
 					 counter++;
-					 System.out.println("Processed " + counter + "/" + fileList.size());
 				 });
 				 
 				 if(iteration <= fileList.size()) {
@@ -59,7 +61,6 @@ public class InvoiceReaderService {
 					 analyzeInvoice(CommandLineService.executeTesseract(fileList.get(iteration+1),2),fileList.get(iteration+1))
 					 );
 					 counter++;
-					 System.out.println("Processed " + counter + "/" + fileList.size());
 				 });
 				 if(iteration+1 <= fileList.size()) {
 					 thread2.start();
@@ -71,7 +72,6 @@ public class InvoiceReaderService {
 					 analyzeInvoice(CommandLineService.executeTesseract(fileList.get(iteration+2),3),fileList.get(iteration+2))
 					 );
 					 counter++;
-					 System.out.println("Processed " + counter + "/" + fileList.size());
 				 });
 				 if(iteration + 2 < fileList.size()) {
 					 thread3.start();
@@ -83,7 +83,6 @@ public class InvoiceReaderService {
 					 analyzeInvoice(CommandLineService.executeTesseract(fileList.get(iteration+3),4),fileList.get(iteration+3))
 					 );
 					 counter++;
-					 System.out.println("Processed " + counter + "/" + fileList.size());
 				 });
 				 
 				 if(iteration + 3 < fileList.size()) {
@@ -95,7 +94,6 @@ public class InvoiceReaderService {
 					 analyzeInvoice(CommandLineService.executeTesseract(fileList.get(iteration+4),5),fileList.get(iteration+4))
 					 );
 					 counter++;
-					 System.out.println("Processed " + counter + "/" + fileList.size());
 				 });
 				 
 				 if(iteration + 4 < fileList.size()) {
@@ -107,7 +105,6 @@ public class InvoiceReaderService {
 					 analyzeInvoice(CommandLineService.executeTesseract(fileList.get(iteration+5),6),fileList.get(iteration+5))
 					 );
 					 counter++;
-					 System.out.println("Processed " + counter + "/" + fileList.size());
 				 });
 				 
 				 if(iteration + 5 < fileList.size() ) {
@@ -119,7 +116,6 @@ public class InvoiceReaderService {
 					 analyzeInvoice(CommandLineService.executeTesseract(fileList.get(iteration+6),7),fileList.get(iteration+6))
 					 );
 					 counter++;
-					 System.out.println("Processed " + counter + "/" + fileList.size());
 				 });
 				 
 				 if(iteration + 6 < fileList.size() ) {
@@ -131,7 +127,6 @@ public class InvoiceReaderService {
 					 analyzeInvoice(CommandLineService.executeTesseract(fileList.get(iteration+7),8),fileList.get(iteration+7))
 					 );
 					 counter++;
-					 System.out.println("Processed " + counter + "/" + fileList.size());
 				 });
 				 
 				 if(iteration + 7 < fileList.size()) {
@@ -143,7 +138,6 @@ public class InvoiceReaderService {
 					 analyzeInvoice(CommandLineService.executeTesseract(fileList.get(iteration+8),9),fileList.get(iteration+8))
 					 );
 					 counter++;
-					 System.out.println("Processed " + counter + "/" + fileList.size());
 				 });
 				 
 				 if(iteration + 8 < fileList.size() ) {
@@ -155,7 +149,6 @@ public class InvoiceReaderService {
 					 analyzeInvoice(CommandLineService.executeTesseract(fileList.get(iteration+9),10),fileList.get(iteration+9))
 					 );
 					 counter++;
-					 System.out.println("Processed " + counter + "/" + fileList.size());
 				 });
 				 
 				 if(iteration + 9 < fileList.size() ) {
@@ -172,12 +165,8 @@ public class InvoiceReaderService {
 				 thread8.join();
 				 thread9.join();
 				 thread10.join();
-				 
-//				 analyzeInvoice(CommandLineService.executeTesseract(imageFile),imageFile);
-					
-				
-				
-				// Give user some feedback
+				 double percentageDone = (Double.valueOf(counter)/Double.valueOf(fileList.size()))*100;
+				 messagingTemplate.convertAndSend("/topic/public", percentageDone);
 				
 			} 
 			catch(Exception e) {
@@ -188,12 +177,15 @@ public class InvoiceReaderService {
 			}
 			
 		}
-		
+		WriterService writerService = new WriterService();
 		
 		// Write to excel workbook
-		WriterService.WriteInvoicesToSpreadsheet(invoices);
+		writerService.writeInvoicesToSpreadsheet(invoices);
 		// Write Errors to text file to be examined
-		WriterService.writeErrorFiles(errorFiles);
+		writerService.writeErrorFiles(errorFiles);
+		CommandLineService.cleanUploads();
+		invoices.clear();
+		errorFiles.clear();
 		// Process finished, inform user
 		LocalDateTime endDate = LocalDateTime.now();
 		System.out.println("Done processing files.");
@@ -202,7 +194,7 @@ public class InvoiceReaderService {
 	}
 	
 	private static ArrayList<String> loadFileList(){
-		return  CommandLineService.listFilesUsingJavaIO();
+		return  CommandLineService.listUploadedFilesFiles();
 	}
 	
 	/*

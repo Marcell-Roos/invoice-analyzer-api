@@ -25,9 +25,9 @@ import com.epiuse.invoiceanalyzerapi.model.InvoiceItem;
  */
 public class WriterService {
 	
-	final private static String PATH_TO_OUTPUT = ".\\outputs\\temp\\errorfiles.txt";
+	final private String PATH_TO_OUTPUT = ".\\outputs\\temp\\errorfiles.txt";
 	
-	public static void WriteInvoicesToSpreadsheet(ArrayList<Invoice> invoices) {
+	public void writeInvoicesToSpreadsheet(ArrayList<Invoice> invoices) {
 		
 		 
 		// workbook object 
@@ -112,7 +112,7 @@ public class WriterService {
 		} 
 	}
 	
-	private static XSSFCellStyle applyTitleText(XSSFWorkbook workbook) {
+	private XSSFCellStyle applyTitleText(XSSFWorkbook workbook) {
 		/* Get access to HSSFCellStyle */
         XSSFCellStyle style = workbook.createCellStyle();
         XSSFFont font= workbook.createFont();
@@ -122,7 +122,7 @@ public class WriterService {
 		return style;
 	}
 	
-	private static XSSFCellStyle applyBoldText(XSSFWorkbook workbook) {
+	private XSSFCellStyle applyBoldText(XSSFWorkbook workbook) {
 		/* Get access to HSSFCellStyle */
         XSSFCellStyle style = workbook.createCellStyle();
         XSSFFont font= workbook.createFont();
@@ -131,7 +131,7 @@ public class WriterService {
 		return style;
 	}
 	
-	private static XSSFCellStyle applyBorders(XSSFWorkbook workbook) {
+	private XSSFCellStyle applyBorders(XSSFWorkbook workbook) {
 		/* Get access to HSSFCellStyle */
         XSSFCellStyle style = workbook.createCellStyle();
         
@@ -153,7 +153,7 @@ public class WriterService {
 		return style;
 	}
 	
-	private static XSSFCellStyle applyBordersBoldText(XSSFWorkbook workbook) {
+	private XSSFCellStyle applyBordersBoldText(XSSFWorkbook workbook) {
 		/* Get access to HSSFCellStyle */
         XSSFCellStyle style = workbook.createCellStyle();
         XSSFFont font= workbook.createFont();
@@ -179,7 +179,7 @@ public class WriterService {
 		return style;
 	}
 	
-	public static void writeErrorFiles(ArrayList<String> errorFiles) {
+	public void writeErrorFiles(ArrayList<String> errorFiles) {
 		try(FileWriter fstream = 
 				new FileWriter (PATH_TO_OUTPUT);
 				BufferedWriter writer = new BufferedWriter(fstream);){
