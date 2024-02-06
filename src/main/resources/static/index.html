@@ -2,26 +2,62 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <title>Spring Boot WebSocket Chat Application</title>
+    <title>Invoice Reader</title>
     <link rel="stylesheet" href="app.css" />
 </head>
 <body>
-<noscript>
-    <h2>Sorry! Your browser doesn't support Javascript</h2>
-</noscript>
-<form id="uploadForm" enctype="multipart/form-data">
-  <input type="file" id="fileInput" name="files[]" multiple accept="image/*"/>
-  <button type="button" id="uploadButton">Upload Files</button>
-</form>
+  <div class="card-hover">
+    <div class="card-hover__content">
+      <h3 class="card-hover__title">
+        EPI-USE INVOICE READER
+      </h3>
 
-<label for="progressBar">Progress:</label>
-<progress id="progressBar" value="0" max="100"></progress>
+      <p class="card-hover__text">
+      Browse files to upload, then press "upload". An Excel sheet will download automatically
+      </p>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+      <form id="uploadForm" enctype="multipart/form-data">
+      
+      <label id="fileInputLabel" for="fileInput" class="button">
+	    Select Files
+	</label>
+	<input class="button" type="file" id="fileInput" name="files[]" multiple accept="image/*" />
+  	
+  		<p id="fileText">
+  		</p>
+  		<button class="button hidden"  type="button" id="uploadButton">Upload Files</button>
+		</form>
+    </div>
+    
+    <div id="cardFold" class="card-hover__extra hidden">
+    
+      <div id="progressBar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="--value: 0"></div>
+    </div>
+    
+    <img  id="epiImage" src="epiuse-banner.png" width="250"/>
+    
+
+  </div>
+  
+  
+  
+
+
+
+
+
+
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script src="app.js"></script>
 </body>
+
+
+
 </html>
+
 
 
 

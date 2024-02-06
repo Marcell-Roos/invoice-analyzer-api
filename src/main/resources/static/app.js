@@ -20,24 +20,51 @@ function onMessageReceived(payload) {
     var message = payload.body;
 	console.log(message);
 	let progressBar = document.getElementById("progressBar");
-	console.log(progressBar);
-	progressBar.setAttribute("value",message);
+	
+	progressBar.setAttribute("style","--value: "+message);
 }
+
+
 
 
 // Add event listener to the button element
 const uploadButton = document.getElementById("uploadButton");
 uploadButton.addEventListener("click", uploadFiles);
 
+const fileButton = document.getElementById("fileInput");
+fileButton.addEventListener("change", updatePageAfterFileSelection);
+
+function updatePageAfterFileSelection(event){
+	if(event.target.files.length > 0){
+	uploadButton.classList.remove('hidden');
+		let fileText = document.getElementById('fileText');
+		fileText.innerHTML = event.target.files.length + ' files selected.';
+		
+	}
+	
+}
+
 function uploadFiles(event) {
-  event.preventDefault();
-  const fileInput = document.getElementById("fileInput");
+const fileInput = document.getElementById("fileInput");
   const selectedFiles = fileInput.files;
   // Check if any files are selected
   if (selectedFiles.length === 0) {
     alert("Please select at least one file to upload.");
     return;
   }
+  let epiImage = document.getElementById("epiImage");
+  epiImage.classList.add('hidden');
+  let cardFold = document.getElementById("cardFold");
+  let opacity = 0;
+  let opacity2 = 1;
+let fadeIn = setInterval(() => {
+   cardFold.style.opacity = opacity;
+   epiImage.style.opacity = opacity2;
+   opacity += 0.01;
+   opacity2 -= 0.03;
+}, 10);
+  event.preventDefault();
+  
   
   const formData = new FormData();
   // Append each selected file to the FormData object
