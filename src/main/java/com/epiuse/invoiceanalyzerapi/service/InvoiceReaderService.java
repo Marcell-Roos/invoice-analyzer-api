@@ -40,7 +40,7 @@ public class InvoiceReaderService {
 		 * to complete processing all of their files
 		 */
 		System.out.println("Start Time: " + startDate.toString());
-		for(int i = 0; i <= fileList.size() + 11; i+=10) {
+		for(int i = 0; i <= fileList.size(); i+=10) {
 			iteration = i;
 			try {
 				// Execute Tesseract to transform the image into an ArrayList 
@@ -51,7 +51,7 @@ public class InvoiceReaderService {
 					 counter++;
 				 });
 				 
-				 if(iteration <= fileList.size()) {
+				 if(iteration < fileList.size()) {
 					 thread1.start();
 				 }
 				 
@@ -62,7 +62,7 @@ public class InvoiceReaderService {
 					 );
 					 counter++;
 				 });
-				 if(iteration+1 <= fileList.size()) {
+				 if(iteration+1 < fileList.size()) {
 					 thread2.start();
 				 }
 				 
