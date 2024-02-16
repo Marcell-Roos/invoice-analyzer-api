@@ -179,6 +179,7 @@ public class InvoiceReaderService {
 		writeToFiles();
 		cleanUp();
 		LocalDateTime endDate = LocalDateTime.now();
+		messagingTemplate.convertAndSend("/topic/public", 100);
 		System.out.println("Done processing files.");
 		System.out.println("End Time: " + endDate.toString());
 		
